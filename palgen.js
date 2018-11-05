@@ -12,11 +12,12 @@
 var appwindow;      // DOM element for the app's container
 var palette = [];	// DOM element + metadata for each entry in the palette
 var ciegraph;       // 2D context for ciegraph
-var graphX = 120;   // Center X
-var graphY = 180;   // Center Y
-var graphW = 300;   // Width
-var graphH = 300;   // Height
-var graphScale = 400;   // Scale factor
+var dpRatio = window.devicePixelRatio || 1;		// DPI Scaling
+var graphX = 120 * dpRatio;   // Center X
+var graphY = 180 * dpRatio;   // Center Y
+var graphW = 300 * dpRatio;   // Width
+var graphH = 300 * dpRatio;   // Height
+var graphScale = 400 * dpRatio;   // Scale factor
 var saveLink;       // DOM element for the save link
 
 // Colorimetry presets.
@@ -104,6 +105,8 @@ function app_initialize() {
 	temp = document.createElement('canvas');
 	temp.width = graphW;
 	temp.height = graphH;
+	temp.style.width = graphW/dpRatio + "px";
+	temp.style.height = graphH/dpRatio + "px";
 	ciegraph = temp.getContext("2d");
 	temp.id = "ciegraph";
 	currPane.appendChild(temp);    // Add graph to pane.
@@ -546,7 +549,7 @@ function generatePalette() {
 	ciegraph.fillStyle = "#000";
 	ciegraph.fillRect(0,0,graphW,graphH);
 	ciegraph.strokeStyle = "#444";
-	ciegraph.lineWidth = "0.5";
+	ciegraph.lineWidth = 0.5 * dpRatio;
 	ciegraph.beginPath();
 	ciegraph.moveTo(0,graphY);
 	ciegraph.lineTo(graphW,graphY);
@@ -556,7 +559,7 @@ function generatePalette() {
 	
 	// Draw the gamut triangle.
 	ciegraph.beginPath();
-	ciegraph.lineWidth = "0.5";
+	ciegraph.lineWidth = 0.5 * dpRatio;
 	ciegraph.strokeStyle = "#222";
 	ciegraph.moveTo(((convCoords[0]-convCoords[6]) * graphScale)+graphX,((convCoords[1]-convCoords[7]) * -graphScale)+graphY);
 	ciegraph.lineTo(((convCoords[2]-convCoords[6]) * graphScale)+graphX,((convCoords[3]-convCoords[7]) * -graphScale)+graphY);
@@ -825,11 +828,11 @@ function yiqToRgb(Y,I,Q) {
 	ciegraph.beginPath();
 	ciegraph.strokeStyle = "#"+R+G+B;
 	if (!ovr) {
-		ciegraph.lineWidth = "1";
-		ciegraph.rect((((X/(X+Y+Z))-convCoords[6]) * graphScale)+graphX,(((Y/(X+Y+Z))-convCoords[7]) * -graphScale)+graphY,1,1);
+		ciegraph.lineWidth = dpRatio * 2;
+		ciegraph.rect((((X/(X+Y+Z))-convCoords[6]) * graphScale)+graphX-(.5*dpRatio),(((Y/(X+Y+Z))-convCoords[7]) * -graphScale)+graphY-(.5*dpRatio),dpRatio,dpRatio);
 	} else {
-		ciegraph.lineWidth = "0.5";
-		ciegraph.rect((((X/(X+Y+Z))-convCoords[6]) * graphScale)+graphX-.5,(((Y/(X+Y+Z))-convCoords[7]) * -graphScale)+graphY-.5,2,2);
+		ciegraph.lineWidth = dpRatio * 0.5;
+		ciegraph.rect((((X/(X+Y+Z))-convCoords[6]) * graphScale)+graphX-(1.5*dpRatio),(((Y/(X+Y+Z))-convCoords[7]) * -graphScale)+graphY-(1.5*dpRatio),3*dpRatio,3*dpRatio);
 	}
 	ciegraph.stroke();
 
