@@ -5,196 +5,196 @@
 <title>NES Palette Generator</title>
 <style type="text/css">
 body {
-	background: #222;
-	color: #AAA;
-	font-family: sans-serif;
-	display: flex;
-	flex-direction: column;
-	height: 100vh;
-	margin: 0;
-	padding: 0;
+    background: #222;
+    color: #AAA;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
 }
 #app {
-	flex: 100%;
+    flex: 100%;
 }
 #footer {
-	display: flex;
-	flex-direction: row;
-	padding: 8px;
-	background: #111;
-	color: #AAA;
+    display: flex;
+    flex-direction: row;
+    padding: 8px;
+    background: #111;
+    color: #AAA;
 }
 #footer a {
-	color: #888;
+    color: #888;
 }
 #footer a:hover {
-	color: #FFF;
+    color: #FFF;
 }
 a {
-	color: #AAA;
+    color: #AAA;
 }
 a:hover {
-	color: #FFF;
+    color: #FFF;
 }
 div {
-	vertical-align: middle;
+    vertical-align: middle;
 }
 fieldset {
-	border: 2px solid #AAA;
-	display: inline-block;
-	vertical-align: top;
+    border: 2px solid #AAA;
+    display: inline-block;
+    vertical-align: top;
 }
 fieldset legend {
     padding: 4px 8px;
 }
 hr {
-	border: 1px solid #AAA;
+    border: 1px solid #AAA;
 }
 input {
-	background: #000;
-	border: 1px solid #444;
-	color: #AAA;
+    background: #000;
+    border: 1px solid #444;
+    color: #AAA;
 }
 input:focus {
-	border-color: #AAA;
+    border-color: #AAA;
 }
 input:hover {
-	border-color: #AAA;
+    border-color: #AAA;
 }
 button,
 input[type=button] {
-	cursor: pointer;
-	background: #888;
-	padding: 1px 8px;
-	border: 1px outset #888;
-	color: #000;
-	border-radius: 1px;
+    cursor: pointer;
+    background: #888;
+    padding: 1px 8px;
+    border: 1px outset #888;
+    color: #000;
+    border-radius: 1px;
 }
 button:focus,
 input[type=button]:focus {
-	background: #AAA;
-	border-color: #FFF;
-	border-style: solid;
+    background: #AAA;
+    border-color: #FFF;
+    border-style: solid;
 }
 button:not(:disabled):hover,
 input[type=button]:not(:disabled):hover {
-	border-style: solid;
-	border-color: #FFF;
+    border-style: solid;
+    border-color: #FFF;
 }
 button:not(:disabled):active,
 input[type=button]:not(:disabled):active {
-	border-style: inset;
-	background: #FFF;
-	padding-top: 2px;
-	padding-left: 9px;
-	padding-right: 7px;
-	padding-bottom: 0px;
+    border-style: inset;
+    background: #FFF;
+    padding-top: 2px;
+    padding-left: 9px;
+    padding-right: 7px;
+    padding-bottom: 0px;
 }
 button:disabled,
 input[type=button]:disabled {
-	cursor: default;
-	border-style: solid;
-	border-color: #555;
-	background: #555;
+    cursor: default;
+    border-style: solid;
+    border-color: #555;
+    background: #555;
 }
 input[type=number] {
-	/* There's no way to dice it, in FF, the arrows are ugly and it doesn't
-	seem like the team is going to fix them. */
-	-moz-appearance: textfield;
+    /* There's no way to dice it, in FF, the arrows are ugly and it doesn't
+    seem like the team is going to fix them. */
+    -moz-appearance: textfield;
 }
 label {
-	position: relative;
-	cursor: pointer;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
+    position: relative;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
 }
 input[type=checkbox],
 input[type=radio] {
-	width: 14px;
-	height: 14px;
-	opacity: 0;
+    width: 14px;
+    height: 14px;
+    opacity: 0;
 }
 label:hover {
-	color: #FFF;
+    color: #FFF;
 }
 input[type=checkbox] + label:hover::before,
 input[type=radio] + label:hover::before {
-	border-color: #FFF;
+    border-color: #FFF;
 }
 input[type=checkbox] + label::before,
 input[type=radio] + label::before {
-	box-sizing: border-box;
-	position: absolute;
-	left: -18px;
-	top: 2px;
+    box-sizing: border-box;
+    position: absolute;
+    left: -18px;
+    top: 2px;
 
-	content: "";
-	display: inline-block;
-	height: 14px;
-	width: 14px;
-	background: none;
-	border: 1px solid #888;
+    content: "";
+    display: inline-block;
+    height: 14px;
+    width: 14px;
+    background: none;
+    border: 1px solid #888;
 }
 input[type=checkbox] + label::before {
-	border-radius: 1px;
+    border-radius: 1px;
 }
 input[type=radio] + label::before {
-	border-radius: 100%;
+    border-radius: 100%;
 }
 input[type=checkbox]:checked + label::before,
 input[type=radio]:checked + label::before {
-	background: #888;
+    background: #888;
 }
 input[type=checkbox]:focus + label::before,
 input[type=radio]:focus + label::before {
-	border-color: #FFF;
+    border-color: #FFF;
 }
 input[type=checkbox]:focus:checked + label::before,
 input[type=radio]:focus:checked + label::before {
-	background: #AAA;
-	border-color: #FFF;
+    background: #AAA;
+    border-color: #FFF;
 }
 input[type=checkbox]:active + label::before,
 input[type=radio]:active + label::before {
-	border: 1px solid #FFF;
-	background: #FFF;
+    border: 1px solid #FFF;
+    background: #FFF;
 }
 input[type=checkbox] + label::after,
 input[type=radio] + label::after {
-	position: absolute;
-	box-sizing: border-box;
-	
-	content: "";
-	display: inline-block;
-	
-	opacity: 0;
+    position: absolute;
+    box-sizing: border-box;
+    
+    content: "";
+    display: inline-block;
+    
+    opacity: 0;
 }
 input[type=checkbox] + label::after {
-	left: -16px;
-	top: 5px;
+    left: -16px;
+    top: 5px;
 
     height: 6px;
     width: 10px;
     border-left: 2px solid;
     border-bottom: 2px solid;
-	border-color: #000;
+    border-color: #000;
 
     transform: rotate(-45deg);
 }
 input[type=radio] + label::after {
-	left: -16px;
-	top: 4px;
+    left: -16px;
+    top: 4px;
 
     height: 10px;
     width: 10px;
 
-	border-radius: 100%;
-	border: 2px solid #000;
+    border-radius: 100%;
+    border: 2px solid #000;
 }
 input[type=checkbox]:checked + label::after,
 input[type=radio]:checked + label::after {
-	opacity: 1;
+    opacity: 1;
 }
 
 </style>
@@ -203,9 +203,9 @@ input[type=radio]:checked + label::after {
 <body>
 <div id="app"><noscript>Javascript must be enabled to use this app.</noscript></div>
 <div id="footer">
-	<span>NES Palette Generator</span>
-	<span style="flex:0%"></span>
-	<a href="https://github.com/DragWx/PalGen" target="_blank">GitHub</a>
+    <span>NES Palette Generator</span>
+    <span style="flex:0%"></span>
+    <a href="https://github.com/DragWx/PalGen" target="_blank">GitHub</a>
 </div>
 </body>
 </html>
