@@ -203,10 +203,10 @@ function app_initialize() {
     currPane.appendChild(document.createTextNode("Gam"));
 
     // Defaults for tuning pane.
-    document.paletteTweaks.hue.value = "-0.25";
+    document.paletteTweaks.hue.value = "-0.1";
     document.paletteTweaks.sat.value = "0.7";
-    document.paletteTweaks.bri.value = "-0.2";
-    document.paletteTweaks.con.value = "1.2";
+    document.paletteTweaks.bri.value = "-0.1";
+    document.paletteTweaks.con.value = "1.1";
     document.paletteTweaks.gam.value = "1.0";
     // Apply this after the defaults to prevent spurious calls.
     document.paletteTweaks.hue.onchange = generatePalette;
@@ -216,19 +216,55 @@ function app_initialize() {
     document.paletteTweaks.gam.onchange = generatePalette;
 
     currPane.appendChild(document.createElement("hr"));
-    currPane.appendChild(document.createTextNode("Range"));
+    currPane.appendChild(document.createTextNode("Skew"));
     currPane.appendChild(document.createElement("br"));
+
+    currPane.appendChild(makeFancyRangeBox("rowskew"));
+    currPane.appendChild(document.createTextNode("Row"));
+    currPane.appendChild(document.createElement("br"));
+
+    currPane.appendChild(makeFancyRangeBox("rgbskew"));
+    currPane.appendChild(document.createTextNode("RGB"));
+    currPane.appendChild(document.createElement("br"));
+
+    document.paletteTweaks.rowskew.value = "-0.087";
+    document.paletteTweaks.rgbskew.value = "0";
+    document.paletteTweaks.rowskew.onchange = generatePalette;
+    document.paletteTweaks.rgbskew.onchange = generatePalette;
+
+    currPane.appendChild(document.createElement("hr"));
+
+    // A toggle checkbox to expand/collapse this section
+    temp = document.createElement('input');
+    temp.type = "checkbox";
+    temp.id = "showrange";
+    temp.checked = "";
+    temp.onclick = toggleTuningRange;
+    currPane.appendChild(temp);    // Add checkbox to header.
+    // Label for checkbox, serves as pane caption.
+    temp = document.createElement("label");
+    temp.innerHTML = "Range";
+    temp.htmlFor = "showrange";
+    currPane.appendChild(temp);    // Add label to header.
+
+    currPane.appendChild(document.createElement("br"));
+
+    temp = document.createElement("div");
+    temp.id = "rangeOptions";
 
     // I range and Q range aren't a huge mystery; if you look at the matrix that converts RGB to YIQ,
     // the maximum value you can generate for I and for Q using valid RGB values is what irange and
     // qrange are.
-    currPane.appendChild(makeFancyRangeBox("irange"));
-    currPane.appendChild(document.createTextNode("I"));
-    currPane.appendChild(document.createElement("br"));
+    temp.appendChild(makeFancyRangeBox("irange"));
+    temp.appendChild(document.createTextNode("I"));
+    temp.appendChild(document.createElement("br"));
 
-    currPane.appendChild(makeFancyRangeBox("qrange"));
-    currPane.appendChild(document.createTextNode("Q"));
-    currPane.appendChild(document.createElement("br"));
+    temp.appendChild(makeFancyRangeBox("qrange"));
+    temp.appendChild(document.createTextNode("Q"));
+    temp.appendChild(document.createElement("br"));
+
+    currPane.append(temp);
+    toggleTuningRange();
 
     document.paletteTweaks.irange.value = "0.599";
     document.paletteTweaks.qrange.value = "0.525";
@@ -508,6 +544,13 @@ function toggleGraph() {
         document.getElementById("ciegraph").style.display = "none";
     }
 }
+function toggleTuningRange() {
+    if (document.paletteTweaks.showrange.checked) {
+        document.getElementById("rangeOptions").style.display = "";
+    } else {
+        document.getElementById("rangeOptions").style.display = "none";
+    }
+}
 // Colors [00, 10, 20, 30, 0D, 1D, 2D, 3D]
 var luminances = [0.397, 0.681, 1, 1, -0.117, 0, 0.308, 0.715];
 // Generate the NES palette using the parameters entered on the UI.
@@ -573,6 +616,8 @@ function generatePalette() {
     var con = parseFloat(document.paletteTweaks.con.value);
     var irange = parseFloat(document.paletteTweaks.irange.value);
     var qrange = parseFloat(document.paletteTweaks.qrange.value);
+    var rowskew = parseFloat(document.paletteTweaks.rowskew.value);
+    var rgbskew = parseFloat(document.paletteTweaks.rgbskew.value);
     var textEnable = false;
     if (document.paletteTweaks.showtext.checked) textEnable = true;
     for (var lum = 0; lum < 4; lum++) {
@@ -614,16 +659,31 @@ function generatePalette() {
             palette[63].style.background = "#"+color.R+color.G+color.B;
         }
 
+        // Due to analog properties of the video output DAC of the NES/FC,
+        // brighter colors get a hue shift the brighter they go.
+        // On the 2C02E, it's about -2.5 degrees per row.
+        // On the 2C02G, it's more like -5 degrees per row.
+        // Both revisions are common in US NES consoles.
+        var currRowSkew = lum * rowskew;
+
         // Generate colors x1 to xC for the current luminance.
         for (var hue = 0; hue < 12; hue++) {
+            // Due to the way the traces are laid out on the PPU, the columns
+            // for red, green, and blue experience a slight phase offset
+            // compared to the other columns.
+            if (hue == 1 || hue == 5 || hue == 9) {
+                var currColSkew = rgbskew;
+            } else {
+                var currColSkew = 0;
+            }
             var Y = (low + high) / 2;
             var sat = luminances[lum] - luminances[lum + 4];
             sat *= satAdj * con;
             //Colorburst amplitude = -0.208 ~ 0.286 = 0.494
             //Colorburst bias = 0.039
             // Hue 8 is used as colorburst. Colorburst is 2.5656 radians.
-            var I = Math.sin((((hue - 7) / 12) * 6.2832)+2.5656+hueAdj) * irange;
-            var Q = Math.cos((((hue - 7) / 12) * 6.2832)+2.5656+hueAdj) * qrange;
+            var I = Math.sin((((hue - 7) / 12) * 6.2832)+2.5656+hueAdj+currRowSkew+currColSkew) * irange;
+            var Q = Math.cos((((hue - 7) / 12) * 6.2832)+2.5656+hueAdj+currRowSkew+currColSkew) * qrange;
             // Apply saturation setting
             I *= sat;
             Q *= sat;
